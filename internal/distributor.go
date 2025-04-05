@@ -1,6 +1,6 @@
 package internal
 
-type distributor interface {
+type Distributor interface {
 	publish(Message)
 	removeUser(User)
 	registerUser(User)
@@ -8,7 +8,7 @@ type distributor interface {
 }
 
 type myDistributor struct {
-	broadcasters []broadcaster
+	broadcasters []Broadcaster
 	brQueue      []int
 
 	messages chan Message
@@ -56,7 +56,7 @@ func (d myDistributor) close() {
 
 func newDistributor(broadcasterCount int) myDistributor {
 	result := myDistributor{
-		broadcasters: make([]broadcaster, broadcasterCount),
+		broadcasters: make([]Broadcaster, broadcasterCount),
 		brQueue:      make([]int, 0),
 		messages:     make(chan Message),
 		userToBr:     make(map[string]int),

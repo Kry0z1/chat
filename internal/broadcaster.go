@@ -2,7 +2,7 @@ package internal
 
 import "sync"
 
-type broadcaster interface {
+type Broadcaster interface {
 	start()
 	registerUser(User)
 	removeUser(User)
@@ -56,7 +56,7 @@ func (b myBroadcaster) pass(msg Message) {
 	b.msgChan <- msg
 }
 
-func newBroadcaster() broadcaster {
+func newBroadcaster() Broadcaster {
 	return myBroadcaster{
 		msgChan:   make(chan Message),
 		users:     make(map[string]chan Message),

@@ -28,7 +28,7 @@ type Topic interface {
 type myTopic struct {
 	title string
 
-	d distributor
+	d Distributor
 }
 
 func (t myTopic) publish(msg Message) {
