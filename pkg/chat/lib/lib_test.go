@@ -1,4 +1,4 @@
-package test
+package chat_test
 
 import (
 	"sync"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestBasic(t *testing.T) {
+func TestUsage(t *testing.T) {
 	topic := chat.NewTopic("topic", 1)
 
 	sender := topic.RegisterUser("a", 10000)

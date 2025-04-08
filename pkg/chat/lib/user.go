@@ -26,3 +26,8 @@ func (u User) Close() {
 func (u User) Recieve() chan Message {
 	return u.channel
 }
+
+// Returns title of current topic
+func (u User) Topic() string {
+	return u.topic.Title()
+}
