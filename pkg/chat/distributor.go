@@ -1,4 +1,4 @@
-package internal
+package chat
 
 type Distributor interface {
 	publish(Message)

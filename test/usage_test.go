@@ -5,18 +5,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Kry0z1/chat/internal"
+	"github.com/Kry0z1/chat/pkg/chat"
 	"github.com/stretchr/testify/require"
 )
 
 func TestBasic(t *testing.T) {
-	topic := internal.NewTopic("topic", 1)
+	topic := chat.NewTopic("topic", 1)
 
 	sender := topic.RegisterUser("a", 10000)
 
 	numRecievers := 10
-	recievers := make([]internal.User, numRecievers)
-	pipes := make([]chan internal.Message, numRecievers)
+	recievers := make([]chat.User, numRecievers)
+	pipes := make([]chan chat.Message, numRecievers)
 
 	numMessages := 10
 	wg := sync.WaitGroup{}
@@ -24,7 +24,7 @@ func TestBasic(t *testing.T) {
 
 	for i := range numRecievers {
 		recievers[i] = topic.RegisterUser(string(byte(i)), 10000)
-		pipes[i] = make(chan internal.Message, 10000)
+		pipes[i] = make(chan chat.Message, 10000)
 		go func() {
 			for range numMessages {
 				pipes[i] <- <-recievers[i].Recieve()

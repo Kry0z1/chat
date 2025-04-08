@@ -1,4 +1,4 @@
-package internal
+package chat
 
 // User channel is working like queue:
 //
