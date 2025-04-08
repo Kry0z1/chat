@@ -13,12 +13,12 @@ type User struct {
 // Post message in name of user
 func (u User) Publish(content interface{}) {
 	msg := Message{Content: content, Username: u.name}
-	u.topic.publish(msg)
+	u.topic.Publish(msg)
 }
 
 // Remove user from recieving
 func (u User) Close() {
-	u.topic.removeUser(u)
+	u.topic.RemoveUser(u)
 	close(u.channel)
 }
 

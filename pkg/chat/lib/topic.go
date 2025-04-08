@@ -18,11 +18,11 @@ type Topic interface {
 	Close()
 
 	// Sent message to everyone in topic
-	publish(Message)
+	Publish(Message)
 
 	// Remove user from listening to messages
 	// and removing the ability to send them
-	removeUser(user User)
+	RemoveUser(user User)
 }
 
 type myTopic struct {
@@ -31,11 +31,11 @@ type myTopic struct {
 	d Distributor
 }
 
-func (t myTopic) publish(msg Message) {
+func (t myTopic) Publish(msg Message) {
 	t.d.publish(msg)
 }
 
-func (t myTopic) removeUser(user User) {
+func (t myTopic) RemoveUser(user User) {
 	t.d.removeUser(user)
 }
 

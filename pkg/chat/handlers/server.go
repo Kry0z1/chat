@@ -3,7 +3,6 @@ package chat
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net"
 
 	chat "github.com/Kry0z1/chat/pkg/chat/lib"
@@ -14,7 +13,7 @@ var (
 	ErrUnknownCommand = errors.New("Unknown command")
 )
 
-type user struct {
+type UserIn struct {
 	Username string `json:"username"`
 }
 
@@ -29,7 +28,7 @@ type Response struct {
 	Topic    string `json:"topic"`
 	Username string `json:"username"`
 	Content  string `json:"content"`
-	Error    error  `json:"error"`
+	Error    string `json:"error"`
 }
 
 func ServerHandler() func(net.Conn) {
@@ -37,18 +36,21 @@ func ServerHandler() func(net.Conn) {
 	topics["global"] = chat.NewTopic("global", 32)
 
 	return func(c net.Conn) {
-		var usr user
+		var usr UserIn
 		for {
 			err := json.NewDecoder(c).Decode(&usr)
 			if err != nil {
 				json.NewEncoder(c).Encode(Response{
-					Error:   ErrBadJson,
-					Content: err.Error(),
+					Error: ErrBadJson.Error(),
 				})
 			} else {
 				break
 			}
 		}
+
+		json.NewEncoder(c).Encode(Response{
+			Username: usr.Username,
+		})
 
 		curUser := topics["global"].RegisterUser(usr.Username, 10_000)
 
@@ -60,7 +62,7 @@ func ServerHandler() func(net.Conn) {
 			case msg := <-listenConn:
 				if msg.internalError != nil {
 					json.NewEncoder(c).Encode(Response{
-						Error: msg.internalError,
+						Error: msg.internalError.Error(),
 					})
 					break
 				}
@@ -79,23 +81,19 @@ func ServerHandler() func(net.Conn) {
 					curUser.Publish(msg.Content)
 				case "close":
 					curUser.Close()
-					close(listenConn)
 					c.Close()
 					return
 				default:
 					json.NewEncoder(c).Encode(Response{
-						Error: ErrUnknownCommand,
+						Error: ErrUnknownCommand.Error(),
 					})
 				}
 			case msg := <-curUser.Recieve():
-				err := json.NewEncoder(c).Encode(Response{
+				json.NewEncoder(c).Encode(Response{
 					Topic:    curUser.Topic(),
 					Username: msg.Username,
 					Content:  msg.Content.(string),
 				})
-				if err != nil {
-					log.Fatal(err)
-				}
 			}
 		}
 	}
@@ -104,13 +102,18 @@ func ServerHandler() func(net.Conn) {
 // listens on conn c, forwards parsed requests to pipe
 func connListener(pipe chan Request, c net.Conn) {
 	var req Request
+	dec := json.NewDecoder(c)
 	for {
-		err := json.NewDecoder(c).Decode(&req)
+		err := dec.Decode(&req)
 		if err != nil {
 			pipe <- Request{
 				internalError: ErrBadJson,
 			}
+			continue
 		}
 		pipe <- req
+		if req.Command == "close" {
+			return
+		}
 	}
 }
