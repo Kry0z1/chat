@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Kry0z1/chat/pkg/chat"
+	chat "github.com/Kry0z1/chat/pkg/chat/lib"
 	"github.com/stretchr/testify/require"
 )
 
